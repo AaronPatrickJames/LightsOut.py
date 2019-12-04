@@ -20,7 +20,7 @@ def center_change(board, col, row):
     else:
         board[row][col] = 1
         
-def top_change(board, col,row):
+def top_change(board, col, row):
     if board[row][col-1] == 1:
         board[row][col-1] = 0
     else:
@@ -32,7 +32,7 @@ def bot_change(board, col, row):
     else:
         board[row][col+1] = 1
         
-def west_change(board,col, row):
+def west_change(board, col, row):
     if board[row - 1][col] == 1:
         board[row-1][col] = 0
     else:
@@ -46,17 +46,17 @@ def east_change(board, col, row):
 
 #turn off clicked light and turn on north, south, east, west lights (do before win check)
 def lights_change(board, col, row):
+    center_change(board, col, row)
     if row == 0:
-        center_change(board, col, row)
         #check if romving top or bot then move forward
         if col == 0:
             #remove bot and west
-            bot_change(board, col, row)
+            top_change(board, col, row)
             east_change(board,col, row)
         elif col == 4:
             #remove top and west
-            top_change(board, col, row)
-            west_change(board, col, row)
+            bot_change(board, col, row)
+            east_change(board, col, row)
         else:
             #just remove west
             top_change(board, col, row)
@@ -64,7 +64,6 @@ def lights_change(board, col, row):
             east_change(board, col, row)
             
     elif row == 4:
-        center_change(board, col, row)
         #check if romving top or bot then move forward
         if col == 0:
             #remove top and east
@@ -88,15 +87,23 @@ def lights_change(board, col, row):
     
 #Check for all lights = 0
 def win(board, col, row):
+    x = 0
+    y = 0 
     win_failure_count = 0
     for c in range(COL_COUNT):
         for r in range(COL_COUNT):
             while x != COL_COUNT:
-                while y != ROW_COUNT:
+                x += 1
+                while y != ROW_COUNT:   
                     win_failure_count = win_failure_count + int(board[x][y])
                     y += 1
-                x += 1
-    print("Count finished" + str(win_failure_count))
+                    print(int(y))
+                
+                
+    if win_failure_count >= 1:
+        return False
+    else:
+        return True
     
 #Create Randomly on board
 def boardGen(board):
@@ -113,10 +120,12 @@ board = create_board()
 #Game Over (false)
 game_over = False
 #Counter for turn
-turn = 1
+turn = 0
 
-
+#Main Loop
 while not game_over:
+    turn += 1
+    print("Turn: " + str(turn))
     print(np.flip(board,0))
 
     #get player inputs
@@ -124,3 +133,7 @@ while not game_over:
     row = int(input("Please enter the row you would like to select: "))
 
     lights_change(board, col, row)
+    game_over = win(board, col, row)
+
+
+    
